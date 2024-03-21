@@ -24,23 +24,31 @@
             return "Capricorn";
         }
 
-        public static int Age(DateTime date)
+        public static int Age(this DateTime date)
         {
             var today = DateTime.Today;
-            return (today.Year - date.Year - 1) +
-                (((today.Month > date.Month) ||
-                ((today.Month == date.Month) && (today.Day >= date.Day))) ? 1 : 0);
+            return today.Year - date.Year - 1 +
+                (today.Month > date.Month ||
+                (today.Month == date.Month && today.Day >= date.Day) ? 1 : 0);
         }
 
-        public static bool BirthdayIsToday(DateTime date)
+        public static bool BirthdayIsToday(this DateTime date)
         {
-            return DateTime.Today.Day.Equals(date.Day)
-                && DateTime.Today.Month.Equals(date.Month);
+            return DateTime.Today.Day == date.Day
+                && DateTime.Today.Month == date.Month;
         }
 
-        public static bool IsIncorrect(DateTime date)
+        public static bool IsIncorrect(this DateTime date)
         {
-            if (date >= DateTime.Today) return true;
+            return date == DateTime.Today;
+        }
+
+        public static bool NotBorn(this DateTime date)
+        {
+            return date >= DateTime.Today;
+        }
+        public static bool TooOld(this DateTime date)
+        {
             return Age(date) > 135;
         }
     }

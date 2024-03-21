@@ -22,9 +22,26 @@ namespace Lab02Shvets.ViewModel
         private async void AddPerson(object o)
         {
             InterfaceIsEnable = false;
-            _person = await Task.Run(() => new Person(FirstName, LastName, Email, BirthDate));
+            await Task.Run(() =>
+            {
+                try
+                {
+                    _person = new Person(FirstName, LastName, Email, BirthDate);
+                    InterfaceIsEnable = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            });
+            if (!InterfaceIsEnable)
+            {
+                InterfaceIsEnable = true;
+                return;
+            }
             PersonInfo = _person.Info();
-            InterfaceIsEnable = true;
+            if (_person.IsBirthday)
+                MessageBox.Show("Happy birthday!");
         }
 
         public RelayCommand<object> AddPersonCommand
@@ -41,7 +58,7 @@ namespace Lab02Shvets.ViewModel
             return string.IsNullOrWhiteSpace(FirstName)
                 || string.IsNullOrWhiteSpace(LastName)
                 || string.IsNullOrWhiteSpace(Email)
-                || DateHandler.IsIncorrect(BirthDate);
+                || BirthDate.IsIncorrect();
         }
 
         public bool ButtonIsEnable
@@ -89,12 +106,6 @@ namespace Lab02Shvets.ViewModel
             get { return _birthDate; }
             set
             {
-                if (DateHandler.IsIncorrect(value))
-                {
-                    MessageBox.Show("Error! It is a wrong birthday!");
-                    _birthDate = DateTime.Today;
-                    return;
-                }
                 _birthDate = value;
                 OnPropertyChanged(nameof(BirthDate));
             }
